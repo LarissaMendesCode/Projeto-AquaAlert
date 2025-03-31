@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relatório de Consumo de Água</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .relatorio-container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 800px;
+            margin-top: 20px;
+            position: relative;
+        }
+
+        .relatorio-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .relatorio-header img {
+            width: 80px;
+            margin-bottom: 10px;
+        }
+
+        .relatorio-header h2 {
+            color: #007bff;
+            font-size: 24px;
+            font-weight: 600;
+            margin-top: 0;
+        }
+
+        .secao-consumo {
+            margin-bottom: 20px;
+        }
+
+        .secao-consumo h3 {
+            color: #343a40;
+            font-size: 18px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .secao-consumo p {
+            margin-bottom: 5px;
+            font-size: 16px;
+        }
+
+        .secao-fatura {
+            margin-bottom: 20px;
+        }
+
+        .secao-fatura h3 {
+            color: #343a40;
+            font-size: 18px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .secao-fatura p {
+            margin-bottom: 5px;
+            font-size: 16px;
+        }
+
+        .agradecimento {
+            text-align: center;
+            font-size: 16px;
+            color: #28a745;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .btn-salvar-pdf {
+            background-color: #17a2b8;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            display: block;
+            margin: 0 auto;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+            width: 200px;
+        }
+
+        .btn-salvar-pdf:hover {
+            background-color: #138496;
+        }
+
+        .fechar-relatorio {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 24px;
+            color: #6c757d;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .fechar-relatorio:hover {
+            color: #343a40;
+        }
+
+        @media (max-width: 600px) {
+            .relatorio-container {
+                width: 95%;
+                padding: 20px;
+            }
+            .relatorio-header img {
+                width: 60px;
+            }
+            .relatorio-header h2 {
+                font-size: 20px;
+            }
+            .secao-consumo p, .secao-fatura p, .agradecimento {
+                font-size: 14px;
+            }
+            .btn-salvar-pdf {
+                font-size: 14px;
+                width: 100%;
+            }
+            .fechar-relatorio {
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="relatorio-container">
+        <div class="fechar-relatorio" id="fecharRelatorio">&times;</div>
+        <div class="relatorio-header">
+            <img src="https://cdn-icons-png.flaticon.com/512/5812/5812375.png" alt="Ícone de Relatório">
+            <h2>Relatório</h2>
+        </div>
+        <div class="secao-consumo">
+            <h3>Consumo no Chuveiro:</h3>
+            <p>Consumo: 756.00 L</p>
+            <p>Desperdício: 708.00 L</p>
+            <p>Economia: 0 L</p>
+        </div>
+        <div class="secao-consumo">
+            <h3>Consumo na Torneira:</h3>
+            <p>Consumo: 540.0 L</p>
+            <p>Desperdício: 513.0 L</p>
+            <p>Economia: 0 L</p>
+        </div>
+        <div class="secao-consumo">
+            <h3>Consumo na Descarga:</h3>
+            <p>Consumo: 24.0 L</p>
+            <p>Desperdício: 0 L</p>
+            <p>Economia: 6.0 L</p>
+        </div>
+        <div class="secao-fatura">
+            <h3>Fatura</h3>
+            <p>Fatura de água: R$ -151.97</p>
+            <p>Fatura de esgoto: R$ -42.49</p>
+            <p>Total: R$ -194.46</p>
+            <p>Economia esperada: R$ 254.37</p>
+        </div>
+        <p class="agradecimento">Cálculo realizado com sucesso! Obrigado por utilizar a nossa calculadora!</p>
+        <button id="btnSalvarPDF" class="btn-salvar-pdf">Salvar PDF</button>
+    </div>
+
+    <script>
+        document.getElementById('btnSalvarPDF').addEventListener('click', function() {
+            const relatorioContainer = document.querySelector('.relatorio-container');
+            const { jsPDF } = window;
+
+            const pdf = new jsPDF({
+                orientation: 'portrait',
+                unit: 'px',
+                format: [relatorioContainer.offsetWidth, relatorioContainer.offsetHeight]
+            });
+
+            pdf.html(relatorioContainer, {
+                callback: function (doc) {
+                    doc.save('relatorio_consumo_agua.pdf');
+                },
+                margin: [10, 10, 10, 10],
+                autoPaging: 'text',
+                x: 0,
+                y: 0,
+                width: relatorioContainer.offsetWidth,
+                windowWidth: relatorioContainer.offsetWidth,
+                height: relatorioContainer.offsetHeight
+            });
+        });
+
+        document.getElementById('fecharRelatorio').addEventListener('click', function() {
+            
+            const relatorioContainer = document.querySelector('.relatorio-container');
+            if (relatorioContainer) {
+                relatorioContainer.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
